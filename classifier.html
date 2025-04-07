@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Classifier | Check for Spam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .floating-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-icons i {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.5rem;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .classifier-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 2;
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .classifier-container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .text-input {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.5);
+            background: white;
+        }
+
+        .classify-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: linear-gradient(45deg, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .classify-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .classify-btn.loading {
+            pointer-events: none;
+            color: transparent;
+        }
+
+        .classify-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .result-container {
+            margin-top: 2rem;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #4e54c8;
+        }
+
+        .result-text {
+            line-height: 1.6;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .classifier-container {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            .classifier-container h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-icons">
+        <i class="fas fa-envelope" style="top: 10%; left: 15%; animation-delay: 0s;"></i>
+        <i class="fas fa-shield-alt" style="top: 75%; left: 20%; animation-delay: 0.5s;"></i>
+        <i class="fas fa-chart-bar" style="top: 25%; left: 80%; animation-delay: 1s;"></i>
+        <i class="fas fa-code" style="top: 85%; left: 75%; animation-delay: 1.5s;"></i>
+        <i class="fas fa-search" style="top: 15%; left: 50%; animation-delay: 2s;"></i>
+        <i class="fas fa-globe" style="top: 65%; left: 55%; animation-delay: 2.5s;"></i>
+    </div>
+
+    <div class="classifier-container">
+        <h1>Spam Classifier</h1>
+        <textarea class="text-input" placeholder="Enter your text here to check for spam..."></textarea>
+        <button class="classify-btn" id="classifyBtn">Check for Spam</button>
+        
+        <div class="result-container" id="resultContainer">
+            <h2 class="result-title">Classification Result</h2>
+            <p class="result-text" id="resultText"></p>
+        </div>
+        
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const classifyBtn = document.getElementById('classifyBtn');
+            const textInput = document.querySelector('.text-input');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultText = document.getElementById('resultText');
+            
+            // Create additional floating icons dynamically
+            const floatingIcons = document.querySelector('.floating-icons');
+            const icons = ['fa-envelope', 'fa-shield-alt', 'fa-chart-bar', 'fa-code', 
+                          'fa-search', 'fa-globe', 'fa-comment', 'fa-sms', 
+                          'fa-fish', 'fa-link'];
+            
+            for (let i = 0; i < 20; i++) {
+                const icon = document.createElement('i');
+                icon.className = 'fas ' + icons[Math.floor(Math.random() * icons.length)];
+                
+                // Random positioning
+                const top = Math.random() * 100;
+                const left = Math.random() * 100;
+                const delay = Math.random() * 3;
+                const duration = 4 + Math.random() * 4;
+                
+                icon.style.top = `${top}%`;
+                icon.style.left = `${left}%`;
+                icon.style.animationDelay = `${delay}s`;
+                icon.style.animationDuration = `${duration}s`;
+                
+                floatingIcons.appendChild(icon);
+            }
+            
+            // Classify button click handler
+            classifyBtn.addEventListener('click', function() {
+                const text = textInput.value.trim();
+                
+                if (!text) {
+                    alert('Please enter some text to check for spam');
+                    return;
+                }
+                
+                // Show loading state
+                classifyBtn.classList.add('loading');
+                
+                // Simulate API call with timeout
+                setTimeout(function() {
+                    // Remove loading state
+                    classifyBtn.classList.remove('loading');
+                    
+                    // Show result (this is a simulation - in a real app, you'd use actual API response)
+                    const isSpam = Math.random() > 0.5;
+                    const confidence = (Math.random() * 30 + 70).toFixed(2);
+                    
+                    if (isSpam) {
+                        resultText.textContent = `The text is classified as SPAM with ${confidence}% confidence. It exhibits characteristics commonly found in unsolicited or malicious content.`;
+                    } else {
+                        resultText.textContent = `The text is classified as NOT SPAM (HAM) with ${confidence}% confidence. It appears to be legitimate content.`;
+                    }
+                    
+                    resultContainer.style.display = 'block';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
