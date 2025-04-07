@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Classifier</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            overflow-x: hidden;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: fadeInDown 1.5s ease;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            animation: fadeInUp 1.5s ease;
+        }
+
+        .get-started-btn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background: linear-gradient(45deg, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .get-started-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Floating Icons */
+        .floating-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-icons i {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.5rem;
+            animation: float 5s infinite ease-in-out;
+        }
+
+        /* About Section */
+        .about {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #4e54c8;
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #4e54c8;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-box {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-box i {
+            font-size: 2.5rem;
+            color: #4e54c8;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-box p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .know-more-btn {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .know-more-btn:hover {
+            background: linear-gradient(45deg, #8f94fb, #4e54c8);
+        }
+
+        .feature-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background: #f9f9f9;
+            margin-top: 1rem;
+            border-radius: 5px;
+            padding: 0 15px;
+        }
+
+        .feature-details.active {
+            max-height: 500px;
+            padding: 15px;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="floating-icons">
+            <i class="fas fa-envelope" style="top: 20%; left: 10%; animation-delay: 0s;"></i>
+            <i class="fas fa-shield-alt" style="top: 70%; left: 15%; animation-delay: 0.5s;"></i>
+            <i class="fas fa-chart-bar" style="top: 30%; left: 85%; animation-delay: 1s;"></i>
+            <i class="fas fa-code" style="top: 80%; left: 80%; animation-delay: 1.5s;"></i>
+            <i class="fas fa-search" style="top: 10%; left: 50%; animation-delay: 2s;"></i>
+            <i class="fas fa-globe" style="top: 60%; left: 60%; animation-delay: 2.5s;"></i>
+        </div>
+        <h1>Spam Classifier</h1>
+        <p>An intelligent system to detect and filter spam content across various platforms with high accuracy</p>
+        <button class="get-started-btn" onclick="window.location.href='classifier.html'">Get Started</button>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <h2>About Our Spam Classifier</h2>
+        <p>Our advanced spam detection system leverages state-of-the-art machine learning techniques to identify and filter unwanted content across multiple platforms. Whether you're dealing with emails, social media posts, or other digital content, our classifier provides accurate and reliable spam detection.</p>
+        <p>The system is trained on extensive datasets to ensure high precision in spam identification. It continuously learns and improves its accuracy as it processes more data, making it an invaluable tool for businesses and individuals alike.</p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-container">
+            <h2>Spam Detection Capabilities</h2>
+            <div class="features-grid">
+                <!-- Email Classification -->
+                <div class="feature-box">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email Spam</h3>
+                    <p>Distinguish between spam and legitimate emails with high accuracy.</p>
+                    <button class="know-more-btn" onclick="toggleDetails(this)">Know More</button>
+                    <div class="feature-details">
+                        <p>Our email spam classifier analyzes message content, headers, and metadata to accurately identify spam messages. It can detect phishing attempts, promotional content, and malicious emails while ensuring legitimate communications reach your inbox.</p>
+                    </div>
+                </div>
+
+                <!-- Social Media Spam -->
+                <div class="feature-box">
+                    <i class="fas fa-share-alt"></i>
+                    <h3>Social Media Spam</h3>
+                    <p>Identify spam posts and comments across social platforms.</p>
+                    <button class="know-more-btn" onclick="toggleDetails(this)">Know More</button>
+                    <div class="feature-details">
+                        <p>This feature detects spam content across social media platforms, including fake accounts, promotional spam, and malicious links. It helps maintain clean and authentic social media interactions.</p>
+                    </div>
+                </div>
+
+                <!-- SMS Spam -->
+                <div class="feature-box">
+                    <i class="fas fa-sms"></i>
+                    <h3>SMS Spam</h3>
+                    <p>Filter out unwanted text messages and phishing attempts.</p>
+                    <button class="know-more-btn" onclick="toggleDetails(this)">Know More</button>
+                    <div class="feature-details">
+                        <p>Our SMS spam detector identifies unwanted text messages, including promotional content, scams, and phishing attempts, helping you focus on important communications.</p>
+                    </div>
+                </div>
+
+                <!-- Comment Spam -->
+                <div class="feature-box">
+                    <i class="fas fa-comment"></i>
+                    <h3>Comment Spam</h3>
+                    <p>Detect spam comments on blogs and websites.</p>
+                    <button class="know-more-btn" onclick="toggleDetails(this)">Know More</button>
+                    <div class="feature-details">
+                        <p>This classifier identifies spam comments containing promotional content, malicious links, or irrelevant information, helping maintain the quality of discussions on your website.</p>
+                    </div>
+                </div>
+
+                <!-- Phishing Detection -->
+                <div class="feature-box">
+                    <i class="fas fa-fish"></i>
+                    <h3>Phishing Detection</h3>
+                    <p>Identify phishing attempts in emails and websites.</p>
+                    <button class="know-more-btn" onclick="toggleDetails(this)">Know More</button>
+                    <div class="feature-details">
+                        <p>Our phishing detector examines content for characteristics common in phishing attempts, including suspicious links, fake login pages, and social engineering tactics.</p>
+                    </div>
+                </div>
+
+                <!-- Malicious Links -->
+                <div class="feature-box">
+                    <i class="fas fa-link"></i>
+                    <h3>Malicious Links</h3>
+                    <p>Detect harmful URLs in messages and posts.</p>
+                    <button class="know-more-btn" onclick="toggleDetails(this)">Know More</button>
+                    <div class="feature-details">
+                        <p>This feature analyzes URLs to identify potentially malicious links that may lead to phishing sites, malware downloads, or other security threats.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Toggle feature details
+        function toggleDetails(button) {
+            const details = button.nextElementSibling;
+            details.classList.toggle('active');
+            
+            // Change button text
+            if (details.classList.contains('active')) {
+                button.textContent = 'Show Less';
+            } else {
+                button.textContent = 'Know More';
+            }
+        }
+
+        // Create additional floating icons dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            const floatingIcons = document.querySelector('.floating-icons');
+            const icons = ['fa-envelope', 'fa-shield-alt', 'fa-chart-bar', 'fa-code', 
+                          'fa-search', 'fa-globe', 'fa-comment', 'fa-sms', 
+                          'fa-fish', 'fa-link'];
+            
+            for (let i = 0; i < 15; i++) {
+                const icon = document.createElement('i');
+                icon.className = 'fas ' + icons[Math.floor(Math.random() * icons.length)];
+                
+                // Random positioning
+                const top = Math.random() * 100;
+                const left = Math.random() * 100;
+                const delay = Math.random() * 3;
+                
+                icon.style.top = `${top}%`;
+                icon.style.left = `${left}%`;
+                icon.style.animationDelay = `${delay}s`;
+                
+                floatingIcons.appendChild(icon);
+            }
+        });
+    </script>
+</body>
+</html>
