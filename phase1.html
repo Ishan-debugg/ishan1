@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 1: Data Ingestion - CA साथी</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1a202c;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #1d4ed8;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .phase-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .phase-title {
+            font-size: 2.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .client-name {
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .phase-description {
+            color: #6b7280;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 1rem auto 0;
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+
+        .progress-line-active {
+            height: 2px;
+            background: #2563eb;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-step {
+            background: white;
+            border: 3px solid #e5e7eb;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 2;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            border-color: #2563eb;
+            background: #2563eb;
+            color: white;
+        }
+
+        .progress-step.completed {
+            border-color: #10b981;
+            background: #10b981;
+            color: white;
+        }
+
+        .step-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .step-label {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .step-label.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+
+        .upload-title {
+            font-size: 1.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .upload-instructions {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            background: #fafafa;
+        }
+
+        .upload-zone:hover {
+            border-color: #2563eb;
+            background: #f0f7ff;
+        }
+
+        .upload-zone.dragover {
+            border-color: #2563eb;
+            background: #eff6ff;
+            transform: scale(1.02);
+        }
+
+        .upload-zone.uploaded {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .upload-zone:hover .upload-icon,
+        .upload-zone.dragover .upload-icon {
+            color: #2563eb;
+        }
+
+        .upload-zone.uploaded .upload-icon {
+            color: #10b981;
+        }
+
+        .upload-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .file-types {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-button {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .upload-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        /* File Preview */
+        .file-preview {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .file-preview.show {
+            display: block;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .file-size {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .remove-file {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s ease;
+        }
+
+        .remove-file:hover {
+            background: #dc2626;
+        }
+
+        /* Data Mapping Preview */
+        .mapping-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+
+        .mapping-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mapping-title {
+            font-size: 1.3rem;
+            color: #1a202c;
+            font-weight: 600;
+        }
+
+        .toggle-icon {
+            color: #6b7280;
+            transition: transform 0.3s ease;
+        }
+
+        .mapping-content {
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .mapping-content.show {
+            display: block;
+        }
+
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        .mapping-table th,
+        .mapping-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .mapping-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .column-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Submit Section */
+        .submit-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            disabled: false;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .submit-requirements {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .upload-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .progress-line {
+                display: none;
+            }
+
+            .step-labels {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">CA साथी</div>
+            <div class="breadcrumb">
+                <a href="dashboard.html">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Phase 1: Data Upload</span>
+            </div>
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="phase-header">
+            <h1 class="phase-title">Phase 1: Upload Client Data</h1>
+            <div class="client-name" id="clientName">Sharma Industries Pvt Ltd</div>
+            <p class="phase-description">
+                Securely upload the three mandatory files to begin the AI analysis. 
+                Ensure all files are in the correct format for accurate processing.
+            </p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-active" id="progressLine"></div>
+                </div>
+                <div class="progress-step active" id="step1">1</div>
+                <div class="progress-step" id="step2">2</div>
+                <div class="progress-step" id="step3">3</div>
+            </div>
+            <div class="step-labels">
+                <div class="step-label active">Data Upload</div>
+                <div class="step-label">Processing</div>
+                <div class="step-label">Report Generation</div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <h2 class="upload-title">Upload Required Files</h2>
+            <p class="upload-instructions">
+                Please upload all three mandatory files below. Each file will be validated for format and content before processing.
+            </p>
+
+            <div class="upload-grid">
+                <!-- Financial Ledger Upload -->
+                <div class="upload-zone" id="ledgerZone" onclick="triggerFileInput('ledgerInput')">
+                    <i class="upload-icon fas fa-file-excel" id="ledgerIcon"></i>
+                    <div class="upload-label">Financial Ledger</div>
+                    <div class="upload-description">Upload your complete financial ledger with transaction details</div>
+                    <div class="file-types">Supported: CSV, Excel (.xlsx, .xls)</div>
+                    <button class="upload-button">Choose File</button>
+                    <input type="file" id="ledgerInput" class="file-input" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(this, 'ledger')">
+                    <div class="file-preview" id="ledgerPreview"></div>
+                </div>
+
+                <!-- GSTR-1 Upload -->
+                <div class="upload-zone" id="gstr1Zone" onclick="triggerFileInput('gstr1Input')">
+                    <i class="upload-icon fas fa-file-alt" id="gstr1Icon"></i>
+                    <div class="upload-label">GSTR-1 File</div>
+                    <div class="upload-description">Upload your GSTR-1 return file for outward supplies</div>
+                    <div class="file-types">Supported: JSON, CSV</div>
+                    <button class="upload-button">Choose File</button>
+                    <input type="file" id="gstr1Input" class="file-input" accept=".json,.csv" onchange="handleFileUpload(this, 'gstr1')">
+                    <div class="file-preview" id="gstr1Preview"></div>
+                </div>
+
+                <!-- GSTR-2B Upload -->
+                <div class="upload-zone" id="gstr2bZone" onclick="triggerFileInput('gstr2bInput')">
+                    <i class="upload-icon fas fa-file-invoice" id="gstr2bIcon"></i>
+                    <div class="upload-label">GSTR-2B File</div>
+                    <div class="upload-description">Upload your GSTR-2B file for inward supplies and ITC</div>
+                    <div class="file-types">Supported: JSON, CSV</div>
+                    <button class="upload-button">Choose File</button>
+                    <input type="file" id="gstr2bInput" class="file-input" accept=".json,.csv" onchange="handleFileUpload(this, 'gstr2b')">
+                    <div class="file-preview" id="gstr2bPreview"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Mapping Preview -->
+        <div class="mapping-section">
+            <div class="mapping-header" onclick="toggleMapping()">
+                <h2 class="mapping-title">Data Mapping Preview</h2>
+                <i class="toggle-icon fas fa-chevron-down" id="toggleIcon"></i>
+            </div>
+            <div class="mapping-content" id="mappingContent">
+                <p style="color: #6b7280; margin-bottom: 1.5rem;">
+                    Review and confirm the column mappings for your uploaded files. This ensures accurate data processing.
+                </p>
+                
+                <div id="mappingTables">
+                    <!-- Mapping tables will be generated here based on uploaded files -->
+                    <p style="text-align: center; color: #9ca3af; padding: 2rem;">
+                        Upload files to see data mapping preview
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <div class="submit-requirements">
+                <i class="fas fa-info-circle" style="color: #2563eb;"></i>
+                All three files must be uploaded before processing can begin
+            </div>
+            <button class="submit-btn" id="submitBtn" onclick="submitFiles()" disabled>
+                <i class="fas fa-rocket"></i> Submit Files & Start Processing
+            </button>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3>Validating Files...</h3>
+            <p>Please wait while we validate your uploaded files</p>
+        </div>
+    </div>
+
+    <script>
+        // File upload state
+        const uploadedFiles = {
+            ledger: null,
+            gstr1: null,
+            gstr2b: null
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get client info from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientId = urlParams.get('client');
+            
+            // In a real application, you would fetch client data based on the ID
+            if (clientId) {
+                // This would be replaced with actual client data fetching
+                updateClientInfo(clientId);
+            }
+
+            setupDragAndDrop();
+        });
+
+        // Update client information
+        function updateClientInfo(clientId) {
+            // Sample client data - in production, this would come from an API
+            const clients = {
+                '1': 'Sharma Industries Pvt Ltd',
+                '2': 'Tech Solutions Inc',
+                '3': 'Global Exports Ltd',
+                '4': 'Manufacturing Corp'
+            };
+            
+            const clientName = clients[clientId] || 'Unknown Client';
+            document.getElementById('clientName').textContent = clientName;
+        }
+
+        // Setup drag and drop functionality
+        function setupDragAndDrop() {
+            const zones = ['ledgerZone', 'gstr1Zone', 'gstr2bZone'];
+            
+            zones.forEach(zoneId => {
+                const zone = document.getElementById(zoneId);
+                
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    zone.classList.add('dragover');
+                });
+                
+                zone.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+                });
+                
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const fileType = zoneId.replace('Zone', '');
+                        const inputId = fileType + 'Input';
+                        const input = document.getElementById(inputId);
+                        input.files = files;
+                        handleFileUpload(input, fileType);
+                    }
+                });
+            });
+        }
+
+        // Trigger file input
+        function triggerFileInput(inputId) {
+            document.getElementById(inputId).click();
+        }
+
+        // Handle file upload
+        function handleFileUpload(input, fileType) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (!validateFile(file, fileType)) {
+                return;
+            }
+
+            // Store file
+            uploadedFiles[fileType] = file;
+
+            // Update UI
+            updateUploadZone(fileType, file);
+            updateSubmitButton();
+            generateMappingPreview(fileType, file);
+        }
+
+        // Validate file
+        function validateFile(file, fileType) {
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            
+            if (file.size > maxSize) {
+                alert('File size must be less than 50MB');
+                return false;
+            }
+
+            const allowedTypes = {
+                'ledger': ['.csv', '.xlsx', '.xls'],
+                'gstr1': ['.json', '.csv'],
+                'gstr2b': ['.json', '.csv']
+            };
+
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            if (!allowedTypes[fileType].includes(fileExtension)) {
+                alert(`Invalid file type for ${fileType}. Allowed types: ${allowedTypes[fileType].join(', ')}`);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Update upload zone UI
+        function updateUploadZone(fileType, file) {
+            const zone = document.getElementById(fileType + 'Zone');
+            const icon = document.getElementById(fileType + 'Icon');
+            const preview = document.getElementById(fileType + 'Preview');
+
+            // Update zone appearance
+            zone.classList.add('uploaded');
+            icon.className = 'upload-icon fas fa-check-circle';
+
+            // Show file preview
+            preview.innerHTML = `
+                <div class="file-info">
+                    <div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button class="remove-file" onclick="removeFile('${fileType}')">
+                        <i class="fas fa-times"></i> Remove
+                    </button>
+                </div>
+            `;
+            preview.classList.add('show');
+        }
+
+        // Remove file
+        function removeFile(fileType) {
+            uploadedFiles[fileType] = null;
+            
+            const zone = document.getElementById(fileType + 'Zone');
+            const icon = document.getElementById(fileType + 'Icon');
+            const preview = document.getElementById(fileType + 'Preview');
+            const input = document.getElementById(fileType + 'Input');
+
+            // Reset zone appearance
+            zone.classList.remove('uploaded');
+            preview.classList.remove('show');
+            input.value = '';
+
+            // Reset icon based on file type
+            const iconClasses = {
+                'ledger': 'fas fa-file-excel',
+                'gstr1': 'fas fa-file-alt',
+                'gstr2b': 'fas fa-file-invoice'
+            };
+            icon.className = 'upload-icon ' + iconClasses[fileType];
+
+            updateSubmitButton();
+            updateMappingPreview();
+        }
+
+        // Update submit button state
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            const allFilesUploaded = Object.values(uploadedFiles).every(file => file !== null);
+            
+            submitBtn.disabled = !allFilesUploaded;
+            
+            if (allFilesUploaded) {
+                submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Submit Files & Start Processing';
+            } else {
+                const uploadedCount = Object.values(uploadedFiles).filter(file => file !== null).length;
+                submitBtn.innerHTML = `<i class="fas fa-upload"></i> Upload All Files (${uploadedCount}/3)`;
+            }
+        }
+
+        // Generate mapping preview
+        function generateMappingPreview(fileType, file) {
+            // This would parse the file and show column mapping options
+            // For demo purposes, we'll show sample mappings
+            updateMappingPreview();
+        }
+
+        // Update mapping preview
+        function updateMappingPreview() {
+            const mappingTables = document.getElementById('mappingTables');
+            const uploadedCount = Object.values(uploadedFiles).filter(file => file !== null).length;
+            
+            if (uploadedCount === 0) {
+                mappingTables.innerHTML = `
+                    <p style="text-align: center; color: #9ca3af; padding: 2rem;">
+                        Upload files to see data mapping preview
+                    </p>
+                `;
+                return;
+            }
+
+            let tablesHTML = '';
+            
+            Object.keys(uploadedFiles).forEach(fileType => {
+                if (uploadedFiles[fileType]) {
+                    tablesHTML += generateMappingTable(fileType);
+                }
+            });
+            
+            mappingTables.innerHTML = tablesHTML;
+        }
+
+        // Generate mapping table for a file type
+        function generateMappingTable(fileType) {
+            const sampleData = {
+                'ledger': {
+                    title: 'Financial Ledger Mapping',
+                    columns: ['Date', 'Description', 'Amount', 'Tax Rate', 'GSTIN'],
+                    mappings: ['Transaction Date', 'Taxable Amount', 'Tax Amount', 'GST Rate', 'Party GSTIN']
+                },
+                'gstr1': {
+                    title: 'GSTR-1 Mapping',
+                    columns: ['Invoice No', 'Date', 'GSTIN', 'Taxable Value', 'Tax Amount'],
+                    mappings: ['Invoice Number', 'Invoice Date', 'Recipient GSTIN', 'Taxable Amount', 'Tax Amount']
+                },
+                'gstr2b': {
+                    title: 'GSTR-2B Mapping',
+                    columns: ['Supplier GSTIN', 'Invoice No', 'Date', 'Taxable Value', 'ITC Amount'],
+                    mappings: ['Supplier GSTIN', 'Invoice Number', 'Invoice Date', 'Taxable Value', 'ITC Eligible']
+                }
+            };
+
+            const data = sampleData[fileType];
+            
+            return `
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem; color: #1a202c;">${data.title}</h4>
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>Detected Column</th>
+                                <th>Map To</th>
+                                <th>Sample Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.columns.map((col, index) => `
+                                <tr>
+                                    <td><strong>${col}</strong></td>
+                                    <td>
+                                        <select class="column-select">
+                                            <option value="${data.mappings[index]}" selected>${data.mappings[index]}</option>
+                                            <option value="ignore">Ignore Column</option>
+                                        </select>
+                                    </td>
+                                    <td style="color: #6b7280; font-size: 0.9rem;">Sample data...</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Toggle mapping section
+        function toggleMapping() {
+            const content = document.getElementById('mappingContent');
+            const icon = document.getElementById('toggleIcon');
+            
+            content.classList.toggle('show');
+            
+            if (content.classList.contains('show')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Submit files
+        function submitFiles() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+            
+            // Simulate file validation and processing
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                
+                // Redirect to Phase 2
+                const urlParams = new URLSearchParams(window.location.search);
+                const clientId = urlParams.get('client') || '1';
+                window.location.href = `phase2.html?client=${clientId}`;
+            }, 3000);
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

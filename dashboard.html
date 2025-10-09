@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portfolio Dashboard - CA साथी</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-details h3 {
+            font-size: 0.9rem;
+            color: #1a202c;
+        }
+
+        .user-details p {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .dashboard-subtitle {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .stat-icon.clients { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .stat-icon.reports { background: linear-gradient(135deg, #10b981, #059669); }
+        .stat-icon.high-risk { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .stat-icon.pending { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a202c;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* Controls */
+        .controls {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .add-client-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .add-client-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Client Table */
+        .client-table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .table-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .client-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .client-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .client-table th:hover {
+            background: #e5e7eb;
+        }
+
+        .client-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        .client-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .client-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .client-name {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .gstin {
+            font-family: 'Courier New', monospace;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-high-risk { background: #fee2e2; color: #991b1b; }
+        .status-completed { background: #e0e7ff; color: #3730a3; }
+
+        .risk-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .risk-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .risk-low { background: #10b981; }
+        .risk-medium { background: #f59e0b; }
+        .risk-high { background: #ef4444; }
+
+        .action-btn {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .client-table {
+                font-size: 0.9rem;
+            }
+            
+            .client-table th,
+            .client-table td {
+                padding: 0.75rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .controls-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: none;
+            }
+            
+            .filter-controls {
+                justify-content: center;
+            }
+            
+            .client-table-container {
+                overflow-x: auto;
+            }
+            
+            .client-table {
+                min-width: 800px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">CA साथी</div>
+            <div class="user-info">
+                <div class="user-avatar">CA</div>
+                <div class="user-details">
+                    <h3>CA Professional</h3>
+                    <p>Dashboard Access</p>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Client Portfolio Dashboard</h1>
+            <p class="dashboard-subtitle">Manage your clients and track audit progress efficiently</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon clients">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="totalClients">24</div>
+                <div class="stat-label">Total Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon reports">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="completedReports">18</div>
+                <div class="stat-label">Completed Reports</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon high-risk">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="highRiskClients">3</div>
+                <div class="stat-label">High Risk Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="pendingAudits">6</div>
+                <div class="stat-label">Pending Audits</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="controls-header">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search clients by name or GSTIN..." id="searchInput">
+                </div>
+                <div class="filter-controls">
+                    <select class="filter-select" id="riskFilter">
+                        <option value="">All Risk Levels</option>
+                        <option value="low">Low Risk</option>
+                        <option value="medium">Medium Risk</option>
+                        <option value="high">High Risk</option>
+                    </select>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="high-risk">High Risk</option>
+                    </select>
+                    <select class="filter-select" id="sortBy">
+                        <option value="name">Sort by Name</option>
+                        <option value="risk">Sort by Risk Score</option>
+                        <option value="date">Sort by Last Audit</option>
+                    </select>
+                    <button class="add-client-btn" onclick="addNewClient()">
+                        <i class="fas fa-plus"></i> Add Client
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Table -->
+        <div class="client-table-container">
+            <div class="table-header">
+                <h2 class="table-title">Client List</h2>
+            </div>
+            <table class="client-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('name')">
+                            Client Name <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortTable('gstin')">
+                            GSTIN <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortTable('lastReport')">
+                            Last Report Date <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortTable('status')">
+                            Status <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortTable('risk')">
+                            Risk Score <i class="fas fa-sort"></i>
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="clientTableBody">
+                    <!-- Client data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons will be generated here -->
+        </div>
+    </main>
+
+    <script>
+        // Sample client data
+        const clientsData = [
+            {
+                id: 1,
+                name: "Sharma Industries Pvt Ltd",
+                gstin: "27AABCS1234C1Z5",
+                lastReport: "2024-10-05",
+                status: "active",
+                riskScore: 85,
+                riskLevel: "high"
+            },
+            {
+                id: 2,
+                name: "Tech Solutions Inc",
+                gstin: "29AABCT5678D2Z6",
+                lastReport: "2024-10-03",
+                status: "completed",
+                riskScore: 35,
+                riskLevel: "low"
+            },
+            {
+                id: 3,
+                name: "Global Exports Ltd",
+                gstin: "07AABCG9012E3Z7",
+                lastReport: "2024-09-28",
+                status: "pending",
+                riskScore: 65,
+                riskLevel: "medium"
+            },
+            {
+                id: 4,
+                name: "Manufacturing Corp",
+                gstin: "36AABCM3456F4Z8",
+                lastReport: "2024-10-01",
+                status: "high-risk",
+                riskScore: 92,
+                riskLevel: "high"
+            },
+            {
+                id: 5,
+                name: "Retail Chain Pvt Ltd",
+                gstin: "24AABCR7890G5Z9",
+                lastReport: "2024-09-30",
+                status: "active",
+                riskScore: 45,
+                riskLevel: "medium"
+            },
+            {
+                id: 6,
+                name: "Construction Co Ltd",
+                gstin: "19AABCC2345H6Z0",
+                lastReport: "2024-10-02",
+                status: "completed",
+                riskScore: 28,
+                riskLevel: "low"
+            },
+            {
+                id: 7,
+                name: "Food Processing Unit",
+                gstin: "33AABCF6789I7Z1",
+                lastReport: "2024-09-25",
+                status: "pending",
+                riskScore: 78,
+                riskLevel: "high"
+            },
+            {
+                id: 8,
+                name: "Textile Mills Ltd",
+                gstin: "23AABCT1234J8Z2",
+                lastReport: "2024-10-04",
+                status: "active",
+                riskScore: 52,
+                riskLevel: "medium"
+            }
+        ];
+
+        let filteredClients = [...clientsData];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            renderClientTable();
+            setupEventListeners();
+            updateStats();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterClients);
+            document.getElementById('riskFilter').addEventListener('change', filterClients);
+            document.getElementById('statusFilter').addEventListener('change', filterClients);
+            document.getElementById('sortBy').addEventListener('change', sortClients);
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalClients').textContent = clientsData.length;
+            document.getElementById('completedReports').textContent = clientsData.filter(c => c.status === 'completed').length;
+            document.getElementById('highRiskClients').textContent = clientsData.filter(c => c.riskLevel === 'high').length;
+            document.getElementById('pendingAudits').textContent = clientsData.filter(c => c.status === 'pending').length;
+        }
+
+        // Filter clients
+        function filterClients() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const riskFilter = document.getElementById('riskFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredClients = clientsData.filter(client => {
+                const matchesSearch = client.name.toLowerCase().includes(searchTerm) || 
+                                    client.gstin.toLowerCase().includes(searchTerm);
+                const matchesRisk = !riskFilter || client.riskLevel === riskFilter;
+                const matchesStatus = !statusFilter || client.status === statusFilter;
+
+                return matchesSearch && matchesRisk && matchesStatus;
+            });
+
+            currentPage = 1;
+            renderClientTable();
+        }
+
+        // Sort clients
+        function sortClients() {
+            const sortBy = document.getElementById('sortBy').value;
+
+            filteredClients.sort((a, b) => {
+                switch(sortBy) {
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    case 'risk':
+                        return b.riskScore - a.riskScore;
+                    case 'date':
+                        return new Date(b.lastReport) - new Date(a.lastReport);
+                    default:
+                        return 0;
+                }
+            });
+
+            renderClientTable();
+        }
+
+        // Sort table by column
+        function sortTable(column) {
+            // This would implement column-specific sorting
+            console.log('Sorting by:', column);
+        }
+
+        // Render client table
+        function renderClientTable() {
+            const tbody = document.getElementById('clientTableBody');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const clientsToShow = filteredClients.slice(startIndex, endIndex);
+
+            if (clientsToShow.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <p>No clients found matching your criteria</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = clientsToShow.map(client => `
+                <tr>
+                    <td>
+                        <div class="client-name">${client.name}</div>
+                    </td>
+                    <td>
+                        <div class="gstin">${client.gstin}</div>
+                    </td>
+                    <td>${formatDate(client.lastReport)}</td>
+                    <td>
+                        <span class="status-badge status-${client.status}">
+                            ${client.status.replace('-', ' ')}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="risk-score">
+                            <span class="risk-indicator risk-${client.riskLevel}"></span>
+                            ${client.riskScore}%
+                        </div>
+                    </td>
+                    <td>
+                        <a href="phase1.html?client=${client.id}" class="action-btn">
+                            <i class="fas fa-play"></i> Initiate Anomaly Check
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+
+            renderPagination();
+        }
+
+        // Render pagination
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+
+            // Previous button
+            if (currentPage > 1) {
+                paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>`;
+            }
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    paginationHTML += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    paginationHTML += '<span>...</span>';
+                }
+            }
+
+            // Next button
+            if (currentPage < totalPages) {
+                paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>`;
+            }
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        // Change page
+        function changePage(page) {
+            currentPage = page;
+            renderClientTable();
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Add new client
+        function addNewClient() {
+            alert('Add new client functionality would be implemented here.');
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // This would update stats in real-time in a production environment
+            updateStats();
+        }, 30000);
+    </script>
+</body>
+</html>

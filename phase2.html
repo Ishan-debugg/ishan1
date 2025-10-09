@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 2: Data Processing - CA साथी</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Animation */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+            animation: backgroundMove 20s linear infinite;
+        }
+
+        @keyframes backgroundMove {
+            0% { transform: translateX(0) translateY(0); }
+            25% { transform: translateX(-10px) translateY(-10px); }
+            50% { transform: translateX(-20px) translateY(0); }
+            75% { transform: translateX(-10px) translateY(10px); }
+            100% { transform: translateX(0) translateY(0); }
+        }
+
+        /* Floating Elements */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-icon {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 1.5rem;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .floating-icon:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+        .floating-icon:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 2s; }
+        .floating-icon:nth-child(4) { bottom: 20%; right: 10%; animation-delay: 3s; }
+        .floating-icon:nth-child(5) { top: 50%; left: 5%; animation-delay: 4s; }
+        .floating-icon:nth-child(6) { top: 60%; right: 5%; animation-delay: 5s; }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(-3deg);
+            }
+            75% {
+                transform: translateY(-15px) rotate(2deg);
+            }
+        }
+
+        /* Main Container */
+        .processing-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 2;
+            text-align: center;
+            animation: slideIn 0.8s ease;
+            position: relative;
+        }
+
+        .processing-header {
+            margin-bottom: 2rem;
+        }
+
+        .phase-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .client-name {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .processing-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Progress Indicator */
+        .progress-section {
+            margin-bottom: 3rem;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 1;
+        }
+
+        .progress-line-active {
+            height: 2px;
+            background: #10b981;
+            width: 100px;
+            transition: width 1s ease;
+            animation: progressGlow 2s infinite;
+        }
+
+        @keyframes progressGlow {
+            0%, 100% { box-shadow: 0 0 5px #10b981; }
+            50% { box-shadow: 0 0 20px #10b981, 0 0 30px #10b981; }
+        }
+
+        .progress-step {
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            z-index: 2;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .progress-step.completed {
+            border-color: #10b981;
+            background: #10b981;
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .progress-step.active {
+            border-color: #f59e0b;
+            background: #f59e0b;
+            color: white;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .step-labels {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 1rem;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-weight: 500;
+        }
+
+        .step-label.active {
+            opacity: 1;
+            font-weight: 600;
+            color: #f59e0b;
+        }
+
+        .step-label.completed {
+            opacity: 1;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        /* Main Processing Visual */
+        .processing-visual {
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .main-spinner {
+            width: 120px;
+            height: 120px;
+            border: 6px solid rgba(255, 255, 255, 0.2);
+            border-top: 6px solid #10b981;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .main-spinner::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #f59e0b;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Status Messages */
+        .status-container {
+            margin-bottom: 2rem;
+        }
+
+        .status-message {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            animation: fadeInOut 3s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .sub-status {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-details {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .processing-icon {
+            display: inline-block;
+            margin-right: 0.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Duration Note */
+        .duration-note {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .duration-note i {
+            color: #f59e0b;
+        }
+
+        /* Processing Steps */
+        .processing-steps {
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .step-item:last-child {
+            border-bottom: none;
+        }
+
+        .step-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .step-icon.pending {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .step-icon.processing {
+            background: #f59e0b;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        .step-icon.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .step-item.processing .step-text {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .step-item.completed .step-text {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .processing-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .phase-title {
+                font-size: 2rem;
+            }
+
+            .progress-steps {
+                gap: 1rem;
+            }
+
+            .progress-line {
+                width: 100px;
+            }
+
+            .step-labels {
+                gap: 2rem;
+                font-size: 0.8rem;
+            }
+
+            .main-spinner {
+                width: 80px;
+                height: 80px;
+            }
+
+            .status-message {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Animation for container entrance */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Data visualization elements */
+        .data-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #10b981;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <i class="floating-icon fas fa-brain"></i>
+        <i class="floating-icon fas fa-chart-line"></i>
+        <i class="floating-icon fas fa-cogs"></i>
+        <i class="floating-icon fas fa-database"></i>
+        <i class="floating-icon fas fa-search"></i>
+        <i class="floating-icon fas fa-file-alt"></i>
+    </div>
+
+    <div class="processing-container">
+        <div class="processing-header">
+            <h1 class="phase-title">Phase 2: Processing Data & Running Anomaly Model</h1>
+            <div class="client-name" id="clientName">Sharma Industries Pvt Ltd</div>
+            <p class="processing-subtitle">Our AI is analyzing your data for anomalies and compliance issues</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-section">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-active" id="progressLineActive"></div>
+                </div>
+                <div class="progress-step completed" id="step1">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="progress-step active" id="step2">2</div>
+                <div class="progress-step" id="step3">3</div>
+            </div>
+            <div class="step-labels">
+                <div class="step-label completed">Data Upload</div>
+                <div class="step-label active">Processing</div>
+                <div class="step-label">Report Generation</div>
+            </div>
+        </div>
+
+        <!-- Main Processing Visual -->
+        <div class="processing-visual">
+            <div class="main-spinner"></div>
+            
+            <div class="status-container">
+                <div class="status-message" id="statusMessage">
+                    <i class="processing-icon fas fa-cog"></i>
+                    <span id="statusText">Analyzing 40,000 Transactions...</span>
+                </div>
+                <div class="sub-status" id="subStatus">Calculating 16 Risk Features with XGBoost</div>
+            </div>
+        </div>
+
+        <!-- Data Statistics -->
+        <div class="data-stats">
+            <div class="stat-box">
+                <span class="stat-number" id="transactionCount">40,000</span>
+                <span class="stat-label">Transactions</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number" id="riskFeatures">16</span>
+                <span class="stat-label">Risk Features</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number" id="progressPercent">0%</span>
+                <span class="stat-label">Complete</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number" id="timeRemaining">30s</span>
+                <span class="stat-label">Est. Time</span>
+            </div>
+        </div>
+
+        <!-- Processing Details */
+        <div class="progress-details">
+            <div class="processing-steps" id="processingSteps">
+                <div class="step-item processing" id="step-reconciliation">
+                    <div class="step-icon processing">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <div class="step-text">Reconciliation Check</div>
+                </div>
+                <div class="step-item pending" id="step-anomaly">
+                    <div class="step-icon pending">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="step-text">Anomaly Detection</div>
+                </div>
+                <div class="step-item pending" id="step-risk">
+                    <div class="step-icon pending">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="step-text">Risk Assessment</div>
+                </div>
+                <div class="step-item pending" id="step-compliance">
+                    <div class="step-icon pending">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="step-text">Compliance Validation</div>
+                </div>
+                <div class="step-item pending" id="step-report">
+                    <div class="step-icon pending">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="step-text">Report Generation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Duration Note -->
+        <div class="duration-note">
+            <i class="fas fa-info-circle"></i>
+            <span>This process usually takes 15-30 seconds, please do not close this window.</span>
+        </div>
+    </div>
+
+    <script>
+        // Processing simulation data
+        const processingSteps = [
+            {
+                id: 'step-reconciliation',
+                name: 'Reconciliation Check',
+                duration: 6000,
+                message: 'Reconciling GSTR-1 and GSTR-2B data...',
+                subMessage: 'Cross-referencing invoice data'
+            },
+            {
+                id: 'step-anomaly',
+                name: 'Anomaly Detection',
+                duration: 8000,
+                message: 'Running ML anomaly detection...',
+                subMessage: 'Analyzing transaction patterns'
+            },
+            {
+                id: 'step-risk',
+                name: 'Risk Assessment',
+                duration: 5000,
+                message: 'Calculating risk scores...',
+                subMessage: 'Evaluating compliance risks'
+            },
+            {
+                id: 'step-compliance',
+                name: 'Compliance Validation',
+                duration: 4000,
+                message: 'Validating GST compliance...',
+                subMessage: 'Checking regulatory requirements'
+            },
+            {
+                id: 'step-report',
+                name: 'Report Generation',
+                duration: 3000,
+                message: 'Generating final report...',
+                subMessage: 'Preparing insights and recommendations'
+            }
+        ];
+
+        let currentStepIndex = 0;
+        let totalDuration = processingSteps.reduce((sum, step) => sum + step.duration, 0);
+        let elapsedTime = 0;
+        let startTime = Date.now();
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get client info from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientId = urlParams.get('client');
+            
+            if (clientId) {
+                updateClientInfo(clientId);
+            }
+
+            // Start processing simulation
+            startProcessing();
+        });
+
+        // Update client information
+        function updateClientInfo(clientId) {
+            const clients = {
+                '1': 'Sharma Industries Pvt Ltd',
+                '2': 'Tech Solutions Inc',
+                '3': 'Global Exports Ltd',
+                '4': 'Manufacturing Corp'
+            };
+            
+            const clientName = clients[clientId] || 'Unknown Client';
+            document.getElementById('clientName').textContent = clientName;
+        }
+
+        // Start processing simulation
+        function startProcessing() {
+            // Update progress line
+            document.getElementById('progressLineActive').style.width = '100px';
+            
+            // Start the first step
+            processStep(0);
+            
+            // Update progress continuously
+            updateProgress();
+        }
+
+        // Process individual step
+        function processStep(stepIndex) {
+            if (stepIndex >= processingSteps.length) {
+                completeProcessing();
+                return;
+            }
+
+            const step = processingSteps[stepIndex];
+            
+            // Update status messages
+            document.getElementById('statusText').textContent = step.message;
+            document.getElementById('subStatus').textContent = step.subMessage;
+            
+            // Update step UI
+            updateStepUI(stepIndex);
+            
+            // Simulate step duration
+            setTimeout(() => {
+                completeStep(stepIndex);
+                processStep(stepIndex + 1);
+            }, step.duration);
+        }
+
+        // Update step UI
+        function updateStepUI(stepIndex) {
+            const stepElement = document.getElementById(processingSteps[stepIndex].id);
+            const stepIcon = stepElement.querySelector('.step-icon');
+            
+            // Mark current step as processing
+            stepElement.classList.remove('pending');
+            stepElement.classList.add('processing');
+            stepIcon.classList.remove('pending');
+            stepIcon.classList.add('processing');
+        }
+
+        // Complete step
+        function completeStep(stepIndex) {
+            const stepElement = document.getElementById(processingSteps[stepIndex].id);
+            const stepIcon = stepElement.querySelector('.step-icon');
+            
+            // Mark step as completed
+            stepElement.classList.remove('processing');
+            stepElement.classList.add('completed');
+            stepIcon.classList.remove('processing');
+            stepIcon.classList.add('completed');
+            stepIcon.innerHTML = '<i class="fas fa-check"></i>';
+        }
+
+        // Update progress continuously
+        function updateProgress() {
+            const progressInterval = setInterval(() => {
+                elapsedTime = Date.now() - startTime;
+                const progressPercent = Math.min((elapsedTime / totalDuration) * 100, 100);
+                const remainingTime = Math.max(Math.ceil((totalDuration - elapsedTime) / 1000), 0);
+                
+                // Update progress display
+                document.getElementById('progressPercent').textContent = Math.floor(progressPercent) + '%';
+                document.getElementById('timeRemaining').textContent = remainingTime + 's';
+                
+                // Update transaction count (simulate processing)
+                const processedTransactions = Math.floor((progressPercent / 100) * 40000);
+                document.getElementById('transactionCount').textContent = processedTransactions.toLocaleString();
+                
+                // Clear interval when complete
+                if (progressPercent >= 100) {
+                    clearInterval(progressInterval);
+                }
+            }, 100);
+        }
+
+        // Complete processing
+        function completeProcessing() {
+            // Update final status
+            document.getElementById('statusText').textContent = 'Processing Complete!';
+            document.getElementById('subStatus').textContent = 'Redirecting to anomaly report...';
+            document.getElementById('progressPercent').textContent = '100%';
+            document.getElementById('timeRemaining').textContent = '0s';
+            
+            // Update progress steps
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step2').classList.add('completed');
+            document.getElementById('step2').innerHTML = '<i class="fas fa-check"></i>';
+            
+            // Add completion animation
+            const container = document.querySelector('.processing-container');
+            container.style.transform = 'scale(1.05)';
+            container.style.transition = 'transform 0.3s ease';
+            
+            setTimeout(() => {
+                container.style.transform = 'scale(1)';
+            }, 300);
+            
+            // Redirect to Phase 3 after a short delay
+            setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const clientId = urlParams.get('client') || '1';
+                window.location.href = `phase3.html?client=${clientId}`;
+            }, 2000);
+        }
+
+        // Add some dynamic floating icons
+        document.addEventListener('DOMContentLoaded', function() {
+            const floatingElements = document.querySelector('.floating-elements');
+            const icons = ['fa-brain', 'fa-chart-line', 'fa-cogs', 'fa-database', 'fa-search', 'fa-file-alt', 'fa-calculator', 'fa-shield-alt'];
+            
+            // Add more floating icons dynamically
+            for (let i = 0; i < 10; i++) {
+                const icon = document.createElement('i');
+                icon.className = 'floating-icon fas ' + icons[Math.floor(Math.random() * icons.length)];
+                
+                // Random positioning
+                const top = Math.random() * 80 + 10;
+                const left = Math.random() * 80 + 10;
+                const delay = Math.random() * 8;
+                const duration = 6 + Math.random() * 4;
+                
+                icon.style.top = `${top}%`;
+                icon.style.left = `${left}%`;
+                icon.style.animationDelay = `${delay}s`;
+                icon.style.animationDuration = `${duration}s`;
+                icon.style.fontSize = `${1 + Math.random() * 0.5}rem`;
+                icon.style.opacity = Math.random() * 0.3 + 0.1;
+                
+                floatingElements.appendChild(icon);
+            }
+        });
+
+        // Prevent page refresh/close during processing
+        window.addEventListener('beforeunload', function(e) {
+            if (elapsedTime < totalDuration) {
+                e.preventDefault();
+                e.returnValue = 'Processing is still in progress. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+    </script>
+</body>
+</html>
