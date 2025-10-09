@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 3: Anomaly Report - CA साथी</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #1d4ed8;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .phase-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .phase-title {
+            font-size: 2.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .client-name {
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .completion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #10b981;
+            z-index: 1;
+        }
+
+        .progress-step {
+            background: #10b981;
+            border: 3px solid #10b981;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 2;
+            position: relative;
+            color: white;
+        }
+
+        .step-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .step-label {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* Summary Cards */
+        .summary-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #1a202c;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .summary-card.high-risk::before {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .summary-card.discrepancy::before {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-icon.high-risk {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .card-icon.discrepancy {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-label {
+            color: #6b7280;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .card-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .card-change.increase {
+            color: #ef4444;
+        }
+
+        .card-change.decrease {
+            color: #10b981;
+        }
+
+        /* Anomaly Table */
+        .anomaly-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 3rem;
+        }
+
+        .table-header {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .filter-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .filter-btn.active {
+            background: #ef4444;
+        }
+
+        .anomaly-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .anomaly-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .anomaly-table th:hover {
+            background: #e5e7eb;
+        }
+
+        .anomaly-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        .anomaly-table tbody tr {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .anomaly-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .anomaly-table tbody tr.selected {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+        }
+
+        .invoice-id {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .risk-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .risk-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .risk-high { background: #ef4444; }
+        .risk-medium { background: #f59e0b; }
+        .risk-low { background: #10b981; }
+
+        .risk-value {
+            font-weight: 600;
+        }
+
+        .risk-high .risk-value { color: #ef4444; }
+        .risk-medium .risk-value { color: #f59e0b; }
+        .risk-low .risk-value { color: #10b981; }
+
+        .reason-tag {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .amount {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        /* Report Generation */
+        .report-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .report-title {
+            font-size: 1.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .report-description {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            margin-right: 1rem;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
+        }
+
+        .preview-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .preview-btn:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        /* Justification Preview */
+        .justification-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 3rem;
+        }
+
+        .justification-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .justification-title {
+            font-size: 1.3rem;
+            color: #1a202c;
+            font-weight: 600;
+        }
+
+        .selected-anomaly {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .justification-content {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            line-height: 1.7;
+            color: #374151;
+        }
+
+        .justification-placeholder {
+            color: #9ca3af;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .anomaly-table {
+                font-size: 0.9rem;
+            }
+            
+            .search-input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .anomaly-section {
+                overflow-x: auto;
+            }
+            
+            .anomaly-table {
+                min-width: 800px;
+            }
+            
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success Animation */
+        .success-animation {
+            animation: successPulse 0.6s ease;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">CA साथी</div>
+            <div class="breadcrumb">
+                <a href="dashboard.html">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="phase1.html">Phase 1</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="phase2.html">Phase 2</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Phase 3: Report</span>
+            </div>
+            <div class="header-actions">
+                <a href="dashboard.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="phase-header">
+            <h1 class="phase-title">Phase 3: Anomaly Report & Justification</h1>
+            <div class="client-name" id="clientName">Sharma Industries Pvt Ltd</div>
+            <div class="completion-badge">
+                <i class="fas fa-check-circle"></i>
+                Analysis Complete
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="progress-step">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="progress-step">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="step-labels">
+                <div class="step-label">Data Upload</div>
+                <div class="step-label">Processing</div>
+                <div class="step-label">Report Generation</div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-section">
+            <h2 class="section-title">Analysis Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card high-risk">
+                    <div class="card-header">
+                        <div class="card-icon high-risk">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="card-value" id="highRiskCount">23</div>
+                    <div class="card-label">Total High-Risk Anomalies</div>
+                    <div class="card-change increase">
+                        <i class="fas fa-arrow-up"></i> +15% from last audit
+                    </div>
+                </div>
+                <div class="summary-card discrepancy">
+                    <div class="card-header">
+                        <div class="card-icon discrepancy">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+                    <div class="card-value" id="discrepancyValue">₹12,45,678</div>
+                    <div class="card-label">Total Discrepancy Value (INR)</div>
+                    <div class="card-change decrease">
+                        <i class="fas fa-arrow-down"></i> -8% from last audit
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anomaly Table -->
+        <div class="anomaly-section">
+            <div class="table-header">
+                <h2 class="table-title">Detected Anomalies</h2>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Search by Invoice ID..." id="searchInput">
+                    </div>
+                    <button class="filter-btn" id="highRiskFilter" onclick="toggleHighRiskFilter()">
+                        <i class="fas fa-filter"></i> Show Only High-Risk
+                    </button>
+                </div>
+            </div>
+            <table class="anomaly-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('invoice')">
+                            Invoice ID <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortTable('risk')">
+                            Anomaly Risk Score <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortTable('reason')">
+                            Reason <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortTable('amount')">
+                            Amount (INR) <i class="fas fa-sort"></i>
+                        </th>
+                        <th onclick="sortTable('date')">
+                            Date <i class="fas fa-sort"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="anomalyTableBody">
+                    <!-- Anomaly data will be populated here -->
+                </tbody>
+            </table>
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be generated here -->
+            </div>
+        </div>
+
+        <!-- Justification Preview -->
+        <div class="justification-section">
+            <div class="justification-header">
+                <h2 class="justification-title">AI-Generated Justification</h2>
+                <div class="selected-anomaly" id="selectedAnomaly">Select an anomaly to view justification</div>
+            </div>
+            <div class="justification-content" id="justificationContent">
+                <div class="justification-placeholder">
+                    <i class="fas fa-mouse-pointer" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>Click on any anomaly in the table above to view the AI-generated justification and recommended corrective actions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Generation -->
+        <div class="report-section">
+            <h2 class="report-title">Generate Final Report</h2>
+            <p class="report-description">
+                Download a comprehensive PDF report with all anomalies, justifications, and recommended actions for your client.
+            </p>
+            <button class="download-btn" onclick="downloadReport()">
+                <i class="fas fa-download"></i> Download Final Justification Report (.PDF)
+            </button>
+            <button class="preview-btn" onclick="previewReport()">
+                <i class="fas fa-eye"></i> Preview Report
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Sample anomaly data
+        const anomaliesData = [
+            {
+                id: 1,
+                invoiceId: "INV-2024-001",
+                riskScore: 95,
+                reason: "GSTR-2B Mismatch",
+                amount: 245678,
+                date: "2024-09-15",
+                justification: "This invoice shows a significant discrepancy between the reported taxable amount in GSTR-1 (₹2,45,678) and the corresponding entry in GSTR-2B (₹1,98,543). The difference of ₹47,135 represents a 19.2% variance, which exceeds the acceptable threshold of 5%. This could indicate potential input tax credit irregularities or data entry errors. Recommended Action: Verify the original invoice details with the supplier and reconcile the amounts. If the discrepancy is due to a genuine error, file appropriate amendments in the next return period."
+            },
+            {
+                id: 2,
+                invoiceId: "INV-2024-002",
+                riskScore: 87,
+                reason: "Unusual Tax Rate",
+                amount: 156789,
+                date: "2024-09-18",
+                justification: "The transaction shows an applied GST rate of 28% on goods that typically fall under the 18% tax bracket based on HSN code analysis. This unusual tax rate application could indicate misclassification of goods or potential tax evasion. The excess tax collected amounts to ₹15,679. Recommended Action: Review the HSN code classification and ensure correct tax rate application. Consult with tax experts if the goods qualify for a different tax category."
+            },
+            {
+                id: 3,
+                invoiceId: "INV-2024-003",
+                riskScore: 78,
+                reason: "Duplicate Entry",
+                amount: 89456,
+                date: "2024-09-20",
+                justification: "Multiple entries detected for the same invoice number with identical amounts and dates, suggesting potential duplicate reporting. This could lead to inflated revenue figures and incorrect tax calculations. Recommended Action: Verify the authenticity of transactions and remove any duplicate entries. Implement better invoice tracking systems to prevent future occurrences."
+            },
+            {
+                id: 4,
+                invoiceId: "INV-2024-004",
+                riskScore: 92,
+                reason: "Round Figure Anomaly",
+                amount: 100000,
+                date: "2024-09-22",
+                justification: "Transaction amount of exactly ₹1,00,000 with GST calculated on this round figure raises suspicions of potential manipulation or artificial transaction creation. Round figure transactions often indicate non-genuine business activities. Recommended Action: Provide supporting documentation including purchase orders, delivery challans, and payment proofs to establish the authenticity of this transaction."
+            },
+            {
+                id: 5,
+                invoiceId: "INV-2024-005",
+                riskScore: 65,
+                reason: "Late Filing",
+                amount: 67890,
+                date: "2024-09-25",
+                justification: "This invoice was reported 45 days after the transaction date, which exceeds the normal reporting timeline. While not necessarily fraudulent, delayed reporting can indicate poor record-keeping practices or potential manipulation of tax liabilities. Recommended Action: Implement better invoice tracking and reporting procedures to ensure timely compliance with GST regulations."
+            },
+            {
+                id: 6,
+                invoiceId: "INV-2024-006",
+                riskScore: 83,
+                reason: "Supplier Verification Failed",
+                amount: 178923,
+                date: "2024-09-28",
+                justification: "The supplier GSTIN could not be verified in the government database, or the supplier appears to be inactive/cancelled. Transactions with unverified suppliers pose significant compliance risks and may result in denial of input tax credit. Recommended Action: Verify supplier credentials immediately and obtain valid registration certificates. Consider suspending transactions until verification is complete."
+            },
+            {
+                id: 7,
+                invoiceId: "INV-2024-007",
+                riskScore: 71,
+                reason: "Quantity Mismatch",
+                amount: 134567,
+                date: "2024-10-01",
+                justification: "Significant discrepancy found between reported quantities in the invoice and corresponding entries in inventory records. This mismatch could indicate errors in stock management or potential diversion of goods. Recommended Action: Conduct physical stock verification and reconcile inventory records with invoice quantities."
+            },
+            {
+                id: 8,
+                invoiceId: "INV-2024-008",
+                riskScore: 89,
+                reason: "High Value Transaction",
+                amount: 567890,
+                date: "2024-10-03",
+                justification: "This transaction represents 15% of the monthly turnover, which is unusually high compared to the average transaction pattern. High-value transactions require additional scrutiny to ensure compliance and authenticity. Recommended Action: Provide detailed documentation including contracts, work orders, and payment schedules to justify this high-value transaction."
+            }
+        ];
+
+        let filteredAnomalies = [...anomaliesData];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let selectedAnomalyId = null;
+        let showOnlyHighRisk = false;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get client info from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientId = urlParams.get('client');
+            
+            if (clientId) {
+                updateClientInfo(clientId);
+            }
+
+            renderAnomalyTable();
+            setupEventListeners();
+            updateSummaryCards();
+        });
+
+        // Update client information
+        function updateClientInfo(clientId) {
+            const clients = {
+                '1': 'Sharma Industries Pvt Ltd',
+                '2': 'Tech Solutions Inc',
+                '3': 'Global Exports Ltd',
+                '4': 'Manufacturing Corp'
+            };
+            
+            const clientName = clients[clientId] || 'Unknown Client';
+            document.getElementById('clientName').textContent = clientName;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterAnomalies);
+        }
+
+        // Update summary cards
+        function updateSummaryCards() {
+            const highRiskCount = anomaliesData.filter(a => a.riskScore >= 80).length;
+            const totalDiscrepancy = anomaliesData.reduce((sum, a) => sum + a.amount, 0);
+            
+            document.getElementById('highRiskCount').textContent = highRiskCount;
+            document.getElementById('discrepancyValue').textContent = '₹' + totalDiscrepancy.toLocaleString('en-IN');
+        }
+
+        // Filter anomalies
+        function filterAnomalies() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredAnomalies = anomaliesData.filter(anomaly => {
+                const matchesSearch = anomaly.invoiceId.toLowerCase().includes(searchTerm) ||
+                                    anomaly.reason.toLowerCase().includes(searchTerm);
+                const matchesRiskFilter = !showOnlyHighRisk || anomaly.riskScore >= 80;
+                
+                return matchesSearch && matchesRiskFilter;
+            });
+
+            currentPage = 1;
+            renderAnomalyTable();
+        }
+
+        // Toggle high risk filter
+        function toggleHighRiskFilter() {
+            showOnlyHighRisk = !showOnlyHighRisk;
+            const filterBtn = document.getElementById('highRiskFilter');
+            
+            if (showOnlyHighRisk) {
+                filterBtn.classList.add('active');
+                filterBtn.innerHTML = '<i class="fas fa-filter"></i> Show All';
+            } else {
+                filterBtn.classList.remove('active');
+                filterBtn.innerHTML = '<i class="fas fa-filter"></i> Show Only High-Risk';
+            }
+            
+            filterAnomalies();
+        }
+
+        // Render anomaly table
+        function renderAnomalyTable() {
+            const tbody = document.getElementById('anomalyTableBody');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const anomaliesToShow = filteredAnomalies.slice(startIndex, endIndex);
+
+            if (anomaliesToShow.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem; color: #6b7280;">
+                            <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No anomalies found matching your criteria</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = anomaliesToShow.map(anomaly => `
+                <tr onclick="selectAnomaly(${anomaly.id})" ${selectedAnomalyId === anomaly.id ? 'class="selected"' : ''}>
+                    <td>
+                        <div class="invoice-id">${anomaly.invoiceId}</div>
+                    </td>
+                    <td>
+                        <div class="risk-score">
+                            <span class="risk-indicator ${getRiskLevel(anomaly.riskScore)}"></span>
+                            <span class="risk-value">${anomaly.riskScore}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="reason-tag">${anomaly.reason}</span>
+                    </td>
+                    <td>
+                        <div class="amount">₹${anomaly.amount.toLocaleString('en-IN')}</div>
+                    </td>
+                    <td>${formatDate(anomaly.date)}</td>
+                </tr>
+            `).join('');
+
+            renderPagination();
+        }
+
+        // Get risk level class
+        function getRiskLevel(score) {
+            if (score >= 80) return 'risk-high';
+            if (score >= 60) return 'risk-medium';
+            return 'risk-low';
+        }
+
+        // Select anomaly
+        function selectAnomaly(anomalyId) {
+            selectedAnomalyId = anomalyId;
+            const anomaly = anomaliesData.find(a => a.id === anomalyId);
+            
+            // Update table selection
+            renderAnomalyTable();
+            
+            // Update justification
+            document.getElementById('selectedAnomaly').textContent = `Selected: ${anomaly.invoiceId} - ${anomaly.reason}`;
+            document.getElementById('justificationContent').innerHTML = `
+                <div style="line-height: 1.7; color: #374151;">
+                    ${anomaly.justification}
+                </div>
+            `;
+            
+            // Scroll to justification section
+            document.querySelector('.justification-section').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Render pagination
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredAnomalies.length / itemsPerPage);
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+
+            // Previous button
+            if (currentPage > 1) {
+                paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>`;
+            }
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    paginationHTML += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    paginationHTML += '<span>...</span>';
+                }
+            }
+
+            // Next button
+            if (currentPage < totalPages) {
+                paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>`;
+            }
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        // Change page
+        function changePage(page) {
+            currentPage = page;
+            renderAnomalyTable();
+        }
+
+        // Sort table
+        function sortTable(column) {
+            // Implementation for table sorting
+            console.log('Sorting by:', column);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Download report
+        function downloadReport() {
+            // Show loading state
+            const downloadBtn = document.querySelector('.download-btn');
+            const originalHTML = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; margin-right: 0.5rem;"></div> Generating...';
+            downloadBtn.disabled = true;
+
+            // Simulate report generation
+            setTimeout(() => {
+                // Reset button
+                downloadBtn.innerHTML = originalHTML;
+                downloadBtn.disabled = false;
+                
+                // Add success animation
+                downloadBtn.classList.add('success-animation');
+                setTimeout(() => downloadBtn.classList.remove('success-animation'), 600);
+                
+                // In a real application, this would trigger an actual PDF download
+                alert('Report downloaded successfully! In a real application, a PDF file would be downloaded.');
+            }, 3000);
+        }
+
+        // Preview report
+        function previewReport() {
+            alert('Report preview functionality would open a modal or new window with the report preview.');
+        }
+
+        // Auto-select first high-risk anomaly for demo
+        setTimeout(() => {
+            const firstHighRisk = anomaliesData.find(a => a.riskScore >= 80);
+            if (firstHighRisk) {
+                selectAnomaly(firstHighRisk.id);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
