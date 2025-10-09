@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phase 3: Anomaly Report & Justification</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="logo">CA</div>
+        <div>CA साथी</div>
+      </div>
+      <nav class="toolbar">
+        <a class="btn btn-ghost" href="dashboard.html">Dashboard</a>
+        <button id="downloadBtn" class="btn btn-primary">Download Final Justification Report (.PDF)</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <h2 id="title" style="margin:0 0 12px">Phase 3: Anomaly Report & Justification</h2>
+      <div class="kpis" style="margin-bottom:16px">
+        <div class="kpi">
+          <div class="value" id="kpiAnomalies">0</div>
+          <div class="label">Total High-Risk Anomalies</div>
+        </div>
+        <div class="kpi">
+          <div class="value">₹ <span id="kpiValue">0</span></div>
+          <div class="label">Total Discrepancy Value (INR)</div>
+        </div>
+      </div>
+
+      <div class="toolbar card" style="margin-bottom:12px">
+        <input id="txnSearch" class="input search-input" placeholder="Search by Invoice ID or Reason" />
+        <select id="riskOnly" class="select">
+          <option value="all">All Transactions</option>
+          <option value="high">Show Only High-Risk (≥ 80)</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="caption">Click column headers to sort</span>
+      </div>
+
+      <div class="card" style="overflow:auto; margin-bottom:16px">
+        <table id="reportTable" class="table">
+          <thead>
+            <tr>
+              <th data-key="invoice">Invoice ID</th>
+              <th data-key="risk">Anomaly Risk Score</th>
+              <th data-key="reason">Reason</th>
+              <th data-key="value">Value (INR)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 style="margin:0 0 8px">Justification Preview</h3>
+          <textarea id="justification" class="justification" readonly></textarea>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Selected Transaction</h3>
+          <div id="selection" class="card-muted">None selected</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© <span id="y"></span> CA साथी</div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+    const params = new URLSearchParams(location.search);
+    const clientName = params.get('client');
+    if (clientName) document.getElementById('title').textContent = `Phase 3: Anomaly Report & Justification - ${clientName}`;
+
+    // Generate mock data
+    const data = CA_UI.randomData(120);
+    const tbody = document.querySelector('#reportTable tbody');
+    let selected = null;
+
+    function renderRows() {
+      tbody.innerHTML = '';
+      const q = (document.getElementById('txnSearch').value || '').toLowerCase();
+      const onlyHigh = document.getElementById('riskOnly').value === 'high';
+      let highCount = 0; let totalValue = 0;
+
+      data.forEach(item => {
+        const matches = !q || item.id.toLowerCase().includes(q) || item.reason.toLowerCase().includes(q);
+        const high = item.risk >= 80;
+        if (!matches || (onlyHigh && !high)) return;
+
+        const tr = document.createElement('tr');
+        tr.className = 'table-row';
+        tr.innerHTML = `
+          <td>${item.id}</td>
+          <td>${item.risk}</td>
+          <td>${item.reason}</td>
+          <td>₹ ${item.value.toLocaleString('en-IN')}</td>`;
+        tr.addEventListener('click', () => selectItem(item));
+        tbody.appendChild(tr);
+
+        if (high) highCount += 1;
+        totalValue += item.value;
+      });
+
+      document.getElementById('kpiAnomalies').textContent = highCount;
+      document.getElementById('kpiValue').textContent = totalValue.toLocaleString('en-IN');
+    }
+
+    function selectItem(item) {
+      selected = item;
+      document.getElementById('selection').textContent = `${item.id} • Risk ${item.risk} • ${item.reason}`;
+      document.getElementById('justification').value = `Invoice ${item.id} exhibits a high anomaly score (${item.risk}). Primary reason: ${item.reason}.\n\nRecommended action: Initiate reconciliation between ledger and GSTR-2B, verify vendor GSTIN and tax rate applicability. If discrepancy persists, raise a debit/credit note as per GST rules and document client justification.`;
+    }
+
+    document.getElementById('txnSearch').addEventListener('input', renderRows);
+    document.getElementById('riskOnly').addEventListener('change', renderRows);
+
+    CA_UI.setupSortableTable('#reportTable','risk');
+    renderRows();
+
+    // Simple PDF generation using browser print dialog (placeholder for actual PDF export)
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>
