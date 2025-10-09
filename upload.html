@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phase 1: Upload Client Data</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="logo">CA</div>
+        <div>CA साथी</div>
+      </div>
+      <nav class="toolbar">
+        <a class="btn btn-ghost" href="dashboard.html">Back to Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <h2 id="title" style="margin:0 0 12px">Phase 1: Upload Client Data</h2>
+      <p class="card-muted" style="margin-bottom:16px">Securely upload the three mandatory files to begin the AI analysis.</p>
+
+      <div class="dropzones" style="margin-bottom:18px">
+        <div class="dropzone" id="dz-ledger" data-accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+          <h3>Financial Ledger</h3>
+          <p class="card-muted">CSV/Excel</p>
+          <div class="dz-status">Drag & drop or click to select</div>
+        </div>
+        <div class="dropzone" id="dz-gstr1" data-accept=".json,.csv">
+          <h3>GSTR-1 File</h3>
+          <p class="card-muted">JSON/CSV</p>
+          <div class="dz-status">Drag & drop or click to select</div>
+        </div>
+        <div class="dropzone" id="dz-gstr2b" data-accept=".json,.csv">
+          <h3>GSTR-2B File</h3>
+          <p class="card-muted">JSON/CSV</p>
+          <div class="dz-status">Drag & drop or click to select</div>
+        </div>
+      </div>
+
+      <details class="card" style="margin-bottom:16px">
+        <summary style="cursor:pointer"><strong>Data Mapping Preview</strong></summary>
+        <div style="overflow:auto; margin-top:12px">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Invoice ID</th>
+                <th>Invoice Date</th>
+                <th>Vendor GSTIN</th>
+                <th>Taxable Amount</th>
+                <th>Tax Amount</th>
+              </tr>
+            </thead>
+            <tbody id="previewBody">
+              <tr><td>INV-1001</td><td>2024-04-12</td><td>27ABCDE1234Z5</td><td>1,20,000</td><td>21,600</td></tr>
+              <tr><td>INV-1002</td><td>2024-04-18</td><td>27LMNOP6789Q2</td><td>88,500</td><td>15,930</td></tr>
+              <tr><td>INV-1003</td><td>2024-05-02</td><td>27QWERT4567Y8</td><td>62,350</td><td>11,223</td></tr>
+              <tr><td>INV-1004</td><td>2024-05-09</td><td>27HJKL9876T1</td><td>1,48,900</td><td>26,802</td></tr>
+              <tr><td>INV-1005</td><td>2024-05-15</td><td>27ZXCVB3344R6</td><td>77,420</td><td>13,936</td></tr>
+            </tbody>
+          </table>
+          <p class="caption">Confirm your 'Taxable Amount' column and other headers above.</p>
+        </div>
+      </details>
+
+      <button id="submitBtn" class="btn btn-primary">Submit Files & Start Processing</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© <span id="y"></span> CA साथी</div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+    const params = new URLSearchParams(location.search);
+    const clientName = params.get('client');
+    if (clientName) document.getElementById('title').textContent = `Phase 1: Upload Client Data - ${clientName}`;
+
+    CA_UI.setupDropzone(document.getElementById('dz-ledger'));
+    CA_UI.setupDropzone(document.getElementById('dz-gstr1'));
+    CA_UI.setupDropzone(document.getElementById('dz-gstr2b'));
+
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      CA_UI.navigate('processing.html' + (clientName ? ('?client=' + encodeURIComponent(clientName)) : ''));
+    });
+  </script>
+</body>
+</html>

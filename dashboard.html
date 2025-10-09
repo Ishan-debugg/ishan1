@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Client Portfolio Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="logo">CA</div>
+        <div>CA साथी</div>
+      </div>
+      <nav class="toolbar">
+        <a class="btn btn-ghost" href="index.html">Home</a>
+        <a class="btn btn-secondary" href="login.html">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <h2 style="margin:0 0 14px">Client Portfolio Dashboard</h2>
+      <div class="toolbar card" style="margin-bottom:16px">
+        <input id="clientSearch" class="input search-input" type="search" placeholder="Search clients by name or GSTIN" />
+        <select id="riskFilter" class="select">
+          <option value="all">All Risk Levels</option>
+          <option value="high">High Risk (≥ 80)</option>
+          <option value="medium">Medium Risk (50–79)</option>
+          <option value="low">Low Risk (&lt; 50)</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="caption">Sort: Click on column headers</span>
+      </div>
+
+      <div class="card" style="overflow:auto">
+        <table id="clientTable" class="table">
+          <thead>
+            <tr>
+              <th data-key="client">Client Name</th>
+              <th data-key="gstin">GSTIN</th>
+              <th data-key="date">Last Report Date</th>
+              <th data-key="status">Status</th>
+              <th data-key="risk">Risk Score</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rows inserted via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© <span id="y"></span> CA साथी</div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    const clients = Array.from({length: 18}).map((_,i) => ({
+      name: ['Aarav Industries','BluePeak Traders','Crestline Metals','Delta Textiles','Evergreen Foods','Falcon Retail','GreenRoot Pharma','Horizon Logistics','Indigo Plastics','Jupiter Infra','Karma Enterprises','Lotus Accessories','Mosaic Labs','Nimbus Telecom','Orchid Beverages','Prism Tools','Quartz Electronics','Riverdale Pharma'][i],
+      gstin: '27ABCDE' + String(1000+i) + 'Z5',
+      last: new Date(Date.now() - Math.random()*60*86400000),
+      status: ['Active','Pending','Review'][Math.floor(Math.random()*3)],
+      risk: Math.floor(Math.random()*100)
+    }));
+
+    const tbody = document.querySelector('#clientTable tbody');
+    clients.forEach(c => {
+      const tr = document.createElement('tr');
+      tr.className = 'table-row';
+      tr.dataset.name = (c.name + ' ' + c.gstin).toLowerCase();
+      tr.dataset.risk = String(c.risk);
+      tr.innerHTML = `
+        <td>${c.name}</td>
+        <td>${c.gstin}</td>
+        <td>${c.last.toISOString().slice(0,10)}</td>
+        <td>${c.status}</td>
+        <td>${c.risk}</td>
+        <td class="table-actions">
+          <button class="btn btn-primary" onclick="CA_UI.navigate('upload.html?client=' + encodeURIComponent('${c.name}'))">Initiate Anomaly Check</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+
+    CA_UI.setupSortableTable('#clientTable', 'client');
+    CA_UI.setupClientFilters();
+  </script>
+</body>
+</html>
